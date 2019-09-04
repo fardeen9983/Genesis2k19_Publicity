@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 class Receipt {
   final String id;
   final String event;
-  final List<String> participants;
+  final List<dynamic> participants;
   final String date;
   final String referrer;
 
@@ -16,12 +16,11 @@ class Receipt {
 
   factory Receipt.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data;
-
     return Receipt(
         date: data['date'],
         id: doc.documentID,
-        event: data['events'],
-        participants: data['partcipants'],
+        event: data['event'],
+        participants: data['participants'],
         referrer: data['referrer']);
   }
 
@@ -31,13 +30,11 @@ class Receipt {
         date: data['date'],
         id: data['id'],
         event: data['event'],
-        participants: data['partcipants']);
+        participants: data['participants']);
   }
 
   @override
   String toString() {
     return "Receipt : $id : $date : $event : $participants : $referrer ";
   }
-
-
 }
