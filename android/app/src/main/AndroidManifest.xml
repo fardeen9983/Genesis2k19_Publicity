@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="bvm.genesis19.genesis19_publicity">
+    package="bvm.genesis19.publicity">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -11,7 +11,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="genesis19_publicity">
         <activity
-            android:name=".MainActivity"
+            android:name="bvm.genesis19.genesis19_publicity.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
