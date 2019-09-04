@@ -1,12 +1,30 @@
+import 'package:flutter/cupertino.dart';
+
 class Participant {
   final String name;
   final int mobile;
-  final String dept;
+  final String branch;
   final int year;
-  final List<int> events;
+  final Map<String, dynamic> events;
   final String email;
-  final List<String> reciepts;
 
-  Participant(this.name, this.mobile, this.dept, this.year, this.events,
-      this.email, this.reciepts);
+  Participant({
+    @required this.name,
+    this.mobile,
+    @required this.branch,
+    this.year,
+    @required this.events,
+    @required this.email,
+  });
+
+  factory Participant.fromMap(Map<String, dynamic> data) {
+    data = data ?? {};
+    return Participant(
+        name: data['name'],
+        mobile: data['mobile'],
+        branch: data['branch'],
+        year: data['year'],
+        events: data['events'],
+        email: data['email']);
+  }
 }

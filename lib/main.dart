@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:genesis19_publicity/pages/home_page.dart';
+import 'package:genesis19_publicity/pages/signinform/Loginpage.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomePage(),
+        home: MyApp1(),
       ),
     );
   }
