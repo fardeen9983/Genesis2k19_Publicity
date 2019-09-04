@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class Participant {
@@ -26,5 +27,16 @@ class Participant {
         year: data['year'],
         events: data['events'],
         email: data['email']);
+  }
+
+  factory Participant.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data;
+    return Participant(
+        name: data['name'],
+        mobile: data['mobile'],
+        branch: data['branch'],
+        year: data['year'],
+        events: data['events'],
+        email: doc.documentID);
   }
 }
