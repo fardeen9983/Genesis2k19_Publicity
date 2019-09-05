@@ -30,4 +30,8 @@ class DatabaseService {
     });
     return map;
   }
+
+//  getEvent(String code){
+//    return _db.collection('events').document(code).snapshots();
+//  }
 }
