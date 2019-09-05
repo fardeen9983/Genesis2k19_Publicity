@@ -30,6 +30,7 @@ dependencies:
   cloud_firestore: ^0.12.9+3
   flutter_screenutil: any
   intl: ^0.16.0
+  path_provider: ^1.2.2
 
 dev_dependencies:
   flutter_test:

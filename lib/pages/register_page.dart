@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/event.dart';
 import 'package:genesis19_publicity/services/db.dart';
 import 'package:genesis19_publicity/widgets/register_form.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -11,97 +15,96 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String DD1 = 'Civil',
+  String DD1 = 'civil',
       DD2 = '1';
-  Map<String, dynamic> data;
-
+  Map<String, dynamic> data = {};
+  bool loaded = false;
   final db = DatabaseService();
   Widget placeholder = Container();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "New Registeration",
-            style: TextStyle(color: Colors.black),
-          ),
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-        ),
-        body: FutureBuilder(
-          future: db.getEventCat(),
-          builder:
-              (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snap) {
-            if (snap.hasData) {
-              data = snap.data;
-              List DD1Itmes = data.keys.toList();
-              DD1 = DD1Itmes[0];
-              DD2 = data[DD1][0]['name'];
-              return SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          BranchDD(DD1Itmes),
-                          EventDD(data),
-                          RaisedButton(
-                            onPressed: selectEvent,
-                            child: Text(
-                              "Done",
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        ],
-                      ),
-                      placeholder
-                    ],
-                  ),
-                ),
-              );
-            } else
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-          },
-        ));
+  void initState() {
+    readData();
   }
 
-  Widget BranchDD(List<String> items) =>
-      DropdownButton<String>(
-          value: DD1,
-          items: items
-              .map<DropdownMenuItem<String>>(
-                  (String val) =>
-                  DropdownMenuItem<String>(
-                    child: Text(
-                      val,
-                      textAlign: TextAlign.center,
-                    ),
-                    value: val,
-                  ))
-              .toList(),
-          onChanged: (val) => this.setState(() => this.DD1 = val));
+  @override
+  Widget build(BuildContext context) {
+    if (loaded) {
+      DD1 = data.keys.toList()[0];
+      print(DD1);
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "New Registeration",
+              style: TextStyle(color: Colors.black),
+            ),
+            iconTheme: IconThemeData(color: Colors.black),
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      DropdownButton<String>(
+                          value: DD1,
+                          items: data.keys.toList()
+                              .map<DropdownMenuItem<String>>(
+                                  (String val) =>
+                                  DropdownMenuItem<String>(
+                                    child: Text(
+                                      val,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    value: val,
+                                  ))
+                              .toList(),
+                          onChanged: (val) =>
+                              this.setState(() => this.DD1 = val)),
+                      EventDD(data),
+                      RaisedButton(
+                        onPressed: selectEvent,
+                        child: Text(
+                          "Done",
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    ],
+                  ),
+                  placeholder
+                ],
+              ),
+            ),
+          ));
+    } else
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+  }
 
-  Widget EventDD(Map<String, dynamic> map) =>
-      DropdownButton<String>(
-          value: DD2,
-          items: map[DD1]
-              .map<DropdownMenuItem<String>>((val) =>
-              DropdownMenuItem<String>(
-                child: Text(
-                  val['name'],
-                  textAlign: TextAlign.center,
-                ),
-                value: val['name'],
-              ))
-              .toList(),
-          onChanged: (val) => this.setState(() => this.DD2 = val));
+  Widget EventDD(Map<String, dynamic> map) {
+    DD2 = map[DD1][0]['name'];
+    return DropdownButton<String>(
+        value: DD2,
+        items: map[DD1]
+            .map<DropdownMenuItem<String>>((val) =>
+            DropdownMenuItem<String>(
+              child: Text(
+                val['name'],
+                textAlign: TextAlign.center,
+              ),
+              value: val['name'],
+            ))
+            .toList(),
+        onChanged: (val) => this.setState(() => this.DD2 = val));
+  }
 
   void selectEvent() {
     setState(() {
@@ -115,6 +118,17 @@ class _RegisterPageState extends State<RegisterPage> {
         placeholder = StreamProvider<Event>.value(
             value: db.getEvent(code), child: RegisterForm());
       }
+    });
+  }
+
+  readData() {
+    getApplicationDocumentsDirectory().then((Directory directory) {
+      var dir = directory;
+      var jsonFile = new File(dir.path + "/EventCat.json");
+      this.setState(() {
+        data = json.decode(jsonFile.readAsStringSync()) as Map<String, dynamic>;
+        loaded = true;
+      });
     });
   }
 }

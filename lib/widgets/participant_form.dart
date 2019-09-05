@@ -1,10 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ParticipantForm extends StatelessWidget {
+class ParticipantForm extends StatefulWidget {
   final int index;
 
-  const ParticipantForm({Key key, @required this.index}) : super(key: key);
+  ParticipantForm({Key key, @required this.index}) : super(key: key);
+
+  @override
+  _ParticipantFormState createState() => _ParticipantFormState();
+}
+
+class _ParticipantFormState extends State<ParticipantForm> {
+  String DD1 = 'CE',
+      DD2 = '1';
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +27,7 @@ class ParticipantForm extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Text(
-                "Participant $index",
+                "Participant ${widget.index}",
                 style: TextStyle(fontSize: 20.0),
               ),
               Padding(
@@ -38,6 +46,12 @@ class ParticipantForm extends StatelessWidget {
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(helperText: 'Mobile no'),
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          branchDD(), yearDD()
+                        ],
+                      )
                     ],
                   ))
             ],
@@ -47,4 +61,36 @@ class ParticipantForm extends StatelessWidget {
       ),
     );
   }
+
+  branchDD() =>
+      DropdownButton<String>(
+          value: DD1,
+          items: <String>['CE', 'CP', 'IT', 'EC', 'EL', 'ME', 'PE', 'EE']
+              .map<DropdownMenuItem<String>>(
+                  (String val) =>
+                  DropdownMenuItem<String>(
+                    child: Text(
+                      val,
+                      textAlign: TextAlign.center,
+                    ),
+                    value: val,
+                  ))
+              .toList(),
+          onChanged: (val) => this.setState(() => this.DD1 = val));
+
+  yearDD() =>
+      DropdownButton<String>(
+          value: DD2,
+          items: <String>['1', '2', '3', '4']
+              .map<DropdownMenuItem<String>>(
+                  (String val) =>
+                  DropdownMenuItem<String>(
+                    child: Text(
+                      val,
+                      textAlign: TextAlign.center,
+                    ),
+                    value: val,
+                  ))
+              .toList(),
+          onChanged: (val) => this.setState(() => this.DD2 = val));
 }

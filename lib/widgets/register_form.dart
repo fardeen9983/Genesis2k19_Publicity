@@ -10,6 +10,7 @@ class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Event event = Provider.of<Event>(context);
+    print(event);
     return event != null
         ? Container(
       width: MediaQuery
@@ -41,12 +42,28 @@ class RegisterForm extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: 10.0,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(
+                      "Price: ${event.price}",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    Text(
+                      "Credits: ${event.credit}",
+                      style: TextStyle(fontSize: 20.0),
+                    )
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Center(
-                        child: Text("Date : ${DateFormat.yMd().format(DateTime
-                            .now())}", style: TextStyle(fontSize: 18.0),)),
+                        child: Text(
+                          "Date : ${DateFormat.yMd().format(DateTime.now())}",
+                          style: TextStyle(fontSize: 18.0),
+                        )),
                     Container(
                       width: MediaQuery
                           .of(context)
@@ -64,7 +81,7 @@ class RegisterForm extends StatelessWidget {
                   child: Column(
                     children: createParticipants(event.numParticipants),
                   ),
-                )
+                ),
               ],
             ),
           ),
