@@ -17,6 +17,7 @@ class HomePage extends StatelessWidget {
     }
     return Scaffold(
         appBar: AppBar(
+          actionsIconTheme: IconThemeData(color: Colors.black),
           actions: <Widget>[
             IconButton(
                 icon: Icon(
