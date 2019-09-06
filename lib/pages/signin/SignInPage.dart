@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'form.dart';
@@ -34,7 +29,7 @@ class _SignInPageState extends State<SignInPage> {
     return false;
   }
 
-  LoginUser(BuildContext context) {
+  loginUser(BuildContext context) {
     if (checkFields()) {
       FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password)
@@ -81,21 +76,6 @@ class _SignInPageState extends State<SignInPage> {
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
     Future.delayed(Duration.zero, () async {
-      Firestore.instance.collection('event_cat').snapshots().listen((query) {
-        query.documents.forEach((doc) {
-          data[doc.documentID] = [];
-          data[doc.documentID].addAll((doc.data['events']) as List);
-        });
-        File jsonFile;
-        Directory dir;
-        String fileName = "EventCat.json";
-        getApplicationDocumentsDirectory().then((Directory directory) {
-          dir = directory;
-          jsonFile = new File(dir.path + "/" + fileName);
-          jsonFile.createSync();
-          jsonFile.writeAsStringSync(json.encode(data));
-        });
-      });
       if (user != null) {
         Navigator.pushReplacementNamed(context, "/home");
       }
@@ -148,7 +128,7 @@ class _SignInPageState extends State<SignInPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       InkWell(
-                        onTap: () => LoginUser(context),
+                        onTap: () => loginUser(context),
                         child: Container(
                           width: ScreenUtil.getInstance().setWidth(330),
                           height: ScreenUtil.getInstance().setHeight(100),
@@ -167,7 +147,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () => LoginUser(context),
+                              onTap: () => loginUser(context),
                               child: Center(
                                 child: Text("SIGNIN",
                                     style: TextStyle(

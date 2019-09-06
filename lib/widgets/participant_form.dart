@@ -1,18 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:genesis19_publicity/model/participant.dart';
+import 'package:validators/validators.dart';
 
+// ignore: must_be_immutable
 class ParticipantForm extends StatefulWidget {
   final int index;
+  final _formKey = GlobalKey<FormState>();
 
   ParticipantForm({Key key, @required this.index}) : super(key: key);
+  String DD1 = 'CE',
+      DD2 = '1';
+
+  validate() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      map['branch'] = DD1;
+      map['year'] = int.parse(DD2);
+      return Participant.fromMap(map);
+    } else
+      return null;
+  }
+
+  Map<String, dynamic> map = {
+    'name': null,
+    'mobile': null,
+    'email': null,
+    'branch': null,
+    'year': null,
+    'events': null
+  };
 
   @override
   _ParticipantFormState createState() => _ParticipantFormState();
 }
 
 class _ParticipantFormState extends State<ParticipantForm> {
-  String DD1 = 'CE',
-      DD2 = '1';
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,38 +48,58 @@ class _ParticipantFormState extends State<ParticipantForm> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.30)),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 18.0),
-          child: Column(
-            children: <Widget>[
-              Text(
-                "Participant ${widget.index}",
-                style: TextStyle(fontSize: 20.0),
-              ),
-              Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 18.0, vertical: 2.0),
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(helperText: 'Name'),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(helperText: 'Email'),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(helperText: 'Mobile no'),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          branchDD(), yearDD()
-                        ],
-                      )
-                    ],
-                  ))
-            ],
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Form(
+            key: widget._formKey,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  "Participant ${widget.index}",
+                  style: TextStyle(fontSize: 20.0),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18.0, vertical: 2.0),
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          decoration: InputDecoration(labelText: 'Name'),
+                          validator: (val) =>
+                          val.isEmpty
+                              ? "Required"
+                              : isAlpha(val.replaceAll(' ', 'a'))
+                              ? null
+                              : "Digits not allowed",
+                          onSaved: (val) => widget.map['name'] = val,
+                        ),
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (val) =>
+                          val.isEmpty
+                              ? "Required"
+                              : isEmail(val) ? null : "Enter a valid email",
+                          decoration: InputDecoration(labelText: 'Email'),
+                          onSaved: (val) => widget.map['email'] = val,
+                        ),
+                        TextFormField(
+                          keyboardType: TextInputType.phone,
+                          validator: (val) =>
+                          val.isEmpty
+                              ? "Required"
+                              : val.length == 10 && isNumeric(val)
+                              ? null
+                              : "Enter a valid mobile no",
+                          decoration: InputDecoration(labelText: 'Mobile no'),
+                          onSaved: (val) => widget.map['mobile'] = val,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[branchDD(), yearDD()],
+                        )
+                      ],
+                    ))
+              ],
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
           ),
         ),
       ),
@@ -64,7 +108,7 @@ class _ParticipantFormState extends State<ParticipantForm> {
 
   branchDD() =>
       DropdownButton<String>(
-          value: DD1,
+          value: widget.DD1,
           items: <String>['CE', 'CP', 'IT', 'EC', 'EL', 'ME', 'PE', 'EE']
               .map<DropdownMenuItem<String>>(
                   (String val) =>
@@ -76,11 +120,14 @@ class _ParticipantFormState extends State<ParticipantForm> {
                     value: val,
                   ))
               .toList(),
-          onChanged: (val) => this.setState(() => this.DD1 = val));
+          onChanged: (val) =>
+              this.setState(() {
+                this.widget.DD1 = val;
+              }));
 
   yearDD() =>
       DropdownButton<String>(
-          value: DD2,
+          value: widget.DD2,
           items: <String>['1', '2', '3', '4']
               .map<DropdownMenuItem<String>>(
                   (String val) =>
@@ -92,5 +139,8 @@ class _ParticipantFormState extends State<ParticipantForm> {
                     value: val,
                   ))
               .toList(),
-          onChanged: (val) => this.setState(() => this.DD2 = val));
+          onChanged: (val) =>
+              this.setState(() {
+                this.widget.DD2 = val;
+              }));
 }

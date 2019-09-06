@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:genesis19_publicity/model/event.dart';
+import 'package:genesis19_publicity/model/participant.dart';
 import 'package:genesis19_publicity/model/reciept.dart';
+import 'package:intl/intl.dart';
 
 class DatabaseService {
   final Firestore _db = Firestore.instance;
@@ -31,7 +33,59 @@ class DatabaseService {
     return map;
   }
 
-//  getEvent(String code){
-//    return _db.collection('events').document(code).snapshots();
-//  }
+  addReceipt(String code, List<Participant> particpants, String rid,
+      String email) async {
+    var eval,
+        error = false;
+    Receipt receipt = Receipt(
+        event: code,
+        participants: particpants.map((doc) => doc.email).toList(),
+        date: DateFormat.yMd().format(DateTime.now()),
+        id: rid,
+        referrer: email);
+    await _db
+        .collection('receipt')
+        .document(rid)
+        .setData(receipt.toMap())
+        .catchError((e) {
+      error = true;
+      eval = e;
+    });
+    if (error) return false;
+    var doc = await _db.collection("events").document(code).get();
+    doc.data['receipts'].add(rid);
+    await _db
+        .collection('events')
+        .document(code)
+        .updateData(doc.data)
+        .catchError((e) {
+      error = true;
+      eval = e;
+    });
+    if (error) return false;
+    for (Participant i in particpants) {
+      var doc = await _db.collection("participant").document(i.email).get();
+      if (doc == null)
+        await _db
+            .collection("participant")
+            .document(i.email)
+            .setData(i.toMap(), merge: true)
+            .catchError((e) {
+          error = true;
+          eval = e;
+        });
+      else {
+        (doc.data['events'] as List<dynamic>).addAll(i.events);
+        await _db
+            .collection("participant")
+            .document(i.email)
+            .updateData(doc.data)
+            .catchError((e) {
+          error = true;
+          eval = e;
+        });
+      }
+    }
+    return !error;
+  }
 }

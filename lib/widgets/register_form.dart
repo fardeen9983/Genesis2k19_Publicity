@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/event.dart';
+import 'package:genesis19_publicity/model/participant.dart';
 import 'package:genesis19_publicity/widgets/participant_form.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class RegisterForm extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
+  String receiptNo;
+  List<ParticipantForm> participants;
+  Event globalEvent;
 
   @override
   Widget build(BuildContext context) {
-    Event event = Provider.of<Event>(context);
-    print(event);
+    Event event = globalEvent = Provider.of<Event>(context);
+    try {
+      var credit = event.credit;
+    } catch (e) {
+      return Center(
+        child: Text("No such event exists"),
+      );
+    }
+    participants =
+        createParticipants(event.numParticipants, _formKey.currentState);
     return event != null
         ? Container(
       width: MediaQuery
@@ -42,7 +55,9 @@ class RegisterForm extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 10.0,),
+                SizedBox(
+                  height: 10.0,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -69,7 +84,10 @@ class RegisterForm extends StatelessWidget {
                           .of(context)
                           .size
                           .width * .25,
-                      child: TextField(
+                      child: TextFormField(
+                        validator: (val) =>
+                        val.isEmpty ? "Enter receipt no" : null,
+                        onSaved: (val) => this.receiptNo = val,
                         decoration: const InputDecoration(
                             helperText: "Enter receipt no"),
                       ),
@@ -79,7 +97,7 @@ class RegisterForm extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(8.0),
                   child: Column(
-                    children: createParticipants(event.numParticipants),
+                    children: participants,
                   ),
                 ),
               ],
@@ -93,11 +111,35 @@ class RegisterForm extends StatelessWidget {
     );
   }
 
-  createParticipants(int num) =>
-      List<ParticipantForm>.generate(
-          num,
-              (i) =>
-              ParticipantForm(
-                index: i + 1,
-              ));
+  createParticipants(int num, FormState form) =>
+      List<ParticipantForm>.generate(num, (i) => ParticipantForm(index: i + 1));
+
+  validate() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      List<Participant> temp = List();
+      bool error = false;
+      participants.forEach((doc) {
+        Participant val = doc.validate();
+        if (val == null) {
+          error = true;
+          return;
+        }
+        val.events = [
+          {
+            'date': DateFormat.yMd().format(DateTime.now()),
+            'code': globalEvent.code,
+            'receipt': receiptNo
+          }
+        ];
+        temp.add(val);
+      });
+
+      return !error ? {
+        'list': temp,
+        'code': globalEvent.code,
+        'receipt': receiptNo
+      } : null;
+    }
+  }
 }

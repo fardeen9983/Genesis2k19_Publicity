@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 class Receipt {
   final String id;
   final String event;
-  final List<dynamic> participants;
+  final List<String> participants;
   final String date;
   final String referrer;
 
   Receipt({@required this.event,
     @required this.participants,
-    this.date,
-    this.id,
-    this.referrer});
+    @required this.date,
+    @required this.id,
+    @required this.referrer});
 
   factory Receipt.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data;
@@ -31,6 +31,16 @@ class Receipt {
         id: data['id'],
         event: data['event'],
         participants: data['participants']);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'date': this.date,
+      'id': this.id,
+      'event': this.event,
+      'participants': this.participants,
+      'referrer': this.referrer
+    };
   }
 
   @override

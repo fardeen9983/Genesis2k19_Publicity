@@ -36,7 +36,9 @@ class HomePage extends StatelessWidget {
                                 ),
                                 FlatButton(
                                   child: Text("OK"),
-                                  onPressed: () => auth.signOut(),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
                               ],
                             )))

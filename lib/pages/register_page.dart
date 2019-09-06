@@ -1,12 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/event.dart';
 import 'package:genesis19_publicity/services/db.dart';
 import 'package:genesis19_publicity/widgets/register_form.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -16,81 +14,108 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   String DD1 = 'civil',
-      DD2 = '1';
+      DD2 = 'Doom',
+      code;
   Map<String, dynamic> data = {};
-  bool loaded = false;
+  bool loadB = true,
+      formLoaded = false;
   final db = DatabaseService();
-  Widget placeholder = Container();
-
-  @override
-  void initState() {
-    readData();
-  }
-
+  Widget placeholder = Container(),
+      error = Container(),
+      errWidget = Center(child: Text("No such event exists"));
+  final RegisterForm _registerForm = RegisterForm();
+  final _key = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    if (loaded) {
-      DD1 = data.keys.toList()[0];
-      print(DD1);
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "New Registeration",
-              style: TextStyle(color: Colors.black),
-            ),
-            iconTheme: IconThemeData(color: Colors.black),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
+    return Scaffold(
+        key: _key,
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(
+                  Icons.check,
+                  size: 32.0,
+                  color: Colors.green,
+                ),
+                onPressed: validate),
+            IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  size: 32.0,
+                  color: Colors.red,
+                ),
+                onPressed: () => Navigator.pop(context))
+          ],
+          title: Text(
+            "New Registeration",
+            style: TextStyle(color: Colors.black),
           ),
-          body: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+        ),
+        body: StreamBuilder(
+          stream: Firestore.instance.collection('event_cat').snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap) {
+            if (snap.hasData) {
+              setData(snap.data.documents);
+              return SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      DropdownButton<String>(
-                          value: DD1,
-                          items: data.keys.toList()
-                              .map<DropdownMenuItem<String>>(
-                                  (String val) =>
-                                  DropdownMenuItem<String>(
-                                    child: Text(
-                                      val,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    value: val,
-                                  ))
-                              .toList(),
-                          onChanged: (val) =>
-                              this.setState(() => this.DD1 = val)),
-                      EventDD(data),
-                      RaisedButton(
-                        onPressed: selectEvent,
-                        child: Text(
-                          "Done",
-                          textAlign: TextAlign.center,
-                        ),
-                      )
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          branchDD(data),
+                          eventDD(data),
+                          RaisedButton(
+                            onPressed: selectEvent,
+                            child: Text(
+                              "Done",
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        ],
+                      ),
+                      placeholder,
+                      error
                     ],
                   ),
-                  placeholder
-                ],
-              ),
-            ),
-          ));
-    } else
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+                ),
+              );
+            } else
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+          },
+        ));
   }
 
-  Widget EventDD(Map<String, dynamic> map) {
-    DD2 = map[DD1][0]['name'];
+  Widget branchDD(data) {
+    return DropdownButton<String>(
+        value: DD1,
+        items: data.keys
+            .toList()
+            .map<DropdownMenuItem<String>>(
+                (String val) =>
+                DropdownMenuItem<String>(
+                  child: Text(
+                    val,
+                    textAlign: TextAlign.center,
+                  ),
+                  value: val,
+                ))
+            .toList(),
+        onChanged: (val) =>
+            this.setState(() {
+              this.DD1 = val;
+              this.loadB = true;
+            }));
+  }
+
+  Widget eventDD(Map<String, dynamic> map) {
     return DropdownButton<String>(
         value: DD2,
         items: map[DD1]
@@ -108,6 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void selectEvent() {
     setState(() {
+      formLoaded = true;
       if (data != null) {
         String code;
         data[DD1].forEach((val) {
@@ -115,20 +141,60 @@ class _RegisterPageState extends State<RegisterPage> {
             code = val['code'];
           }
         });
+        this.code = code;
         placeholder = StreamProvider<Event>.value(
-            value: db.getEvent(code), child: RegisterForm());
+          // ignore: missing_return
+            catchError: (context, error) {
+              error = errWidget;
+            },
+            value: db.getEvent(code) ?? Event(title: 'None'),
+            child: Form(child: _registerForm));
       }
     });
   }
 
-  readData() {
-    getApplicationDocumentsDirectory().then((Directory directory) {
-      var dir = directory;
-      var jsonFile = new File(dir.path + "/EventCat.json");
-      this.setState(() {
-        data = json.decode(jsonFile.readAsStringSync()) as Map<String, dynamic>;
-        loaded = true;
-      });
+  void setData(List<DocumentSnapshot> docs) {
+    docs.forEach((doc) {
+      data[doc.documentID] = [];
+      (doc.data['events'] as List<dynamic>)
+          .forEach((val) => data[doc.documentID].add(val));
     });
+
+    if (loadB) {
+      DD2 = data[DD1][0]['name'];
+      loadB = false;
+    }
+  }
+
+  void validate() {
+    if (error != errWidget && formLoaded) {
+      Map val = _registerForm.validate();
+      if (val != null && val['list'].isNotEmpty) {
+        showDialog(
+            context: context,
+            builder: (context) =>
+                AlertDialog(
+                  title: Text('Createing Receipt'),
+                  content: Text("Are you Sure? Please check all the fields!!"),
+                  actions: <Widget>[
+                    FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Cancel")),
+                    FlatButton(
+                        onPressed: () {
+                          save(val);
+                          Navigator.pop(context);
+                        },
+                        child: Text("OK"))
+                  ],
+                ));
+      }
+    }
+  }
+
+  void save(val) async {
+    await db.addReceipt(val['code'], val['list'], val['receipt'], Provider
+        .of<FirebaseUser>(_key.currentContext)
+        .email);
   }
 }
