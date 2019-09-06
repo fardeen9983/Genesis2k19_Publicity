@@ -6,7 +6,7 @@ class Participant {
   final String mobile;
   final String branch;
   final int year;
-  List<Map<String, dynamic>> events;
+  Map<String, dynamic> events;
   final String email;
 
   Participant({
@@ -46,7 +46,7 @@ class Participant {
         mobile: data['mobile'],
         branch: data['branch'],
         year: data['year'],
-        events: data['events'],
+        events: Map<String, dynamic>.from(data['events']),
         email: doc.documentID);
   }
 

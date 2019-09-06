@@ -33,8 +33,8 @@ class DatabaseService {
     return map;
   }
 
-  addReceipt(String code, List<Participant> particpants, String rid,
-      String email) async {
+  Future<bool> addReceipt(String code, List<Participant> particpants,
+      String rid, String email) async {
     var eval,
         error = false;
     Receipt receipt = Receipt(
@@ -51,9 +51,11 @@ class DatabaseService {
       error = true;
       eval = e;
     });
-    if (error) return false;
+    if (error) return error;
     var doc = await _db.collection("events").document(code).get();
-    doc.data['receipts'].add(rid);
+    if (!(doc.data['receipts'] as List).contains(rid))
+      doc.data['receipts'] = List.from(doc.data['receipts'])
+        ..add(rid);
     await _db
         .collection('events')
         .document(code)
@@ -62,10 +64,10 @@ class DatabaseService {
       error = true;
       eval = e;
     });
-    if (error) return false;
+    if (error) return error;
     for (Participant i in particpants) {
       var doc = await _db.collection("participant").document(i.email).get();
-      if (doc == null)
+      if (!doc.exists) {
         await _db
             .collection("participant")
             .document(i.email)
@@ -74,8 +76,9 @@ class DatabaseService {
           error = true;
           eval = e;
         });
-      else {
-        (doc.data['events'] as List<dynamic>).addAll(i.events);
+      } else {
+        doc.data['events'][receipt.id] = i.events[receipt.id];
+//        doc.data['mobile'] = i.mobile;
         await _db
             .collection("participant")
             .document(i.email)
@@ -86,6 +89,6 @@ class DatabaseService {
         });
       }
     }
-    return !error;
+    return Future.value(error);
   }
 }

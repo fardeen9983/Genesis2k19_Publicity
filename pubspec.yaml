@@ -32,6 +32,7 @@ dependencies:
   intl: ^0.16.0
   path_provider: ^1.2.2
   validators: ^2.0.0+1
+  progress_hud: ^1.1.0
 
 dev_dependencies:
   flutter_test:

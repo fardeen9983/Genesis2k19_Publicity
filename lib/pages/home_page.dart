@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/reciept.dart';
 import 'package:genesis19_publicity/services/db.dart';
-import 'package:genesis19_publicity/widgets/ReceiptList.dart';
+import 'package:genesis19_publicity/widgets/register/receipt_list.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -37,6 +37,7 @@ class HomePage extends StatelessWidget {
                                 FlatButton(
                                   child: Text("OK"),
                                   onPressed: () {
+                                    auth.signOut();
                                     Navigator.pop(context);
                                   },
                                 ),
@@ -55,6 +56,12 @@ class HomePage extends StatelessWidget {
             child: Icon(Icons.add),
             onPressed: () => Navigator.pushNamed(context, "/register")),
         body: StreamProvider<List<Receipt>>.value(
-            child: ReceiptList(), value: db.getReceipts(user.email)));
+          child: ReceiptList(),
+          value: db.getReceipts(user.email),
+          catchError: (context, e) {
+            print(e);
+            return [];
+          },
+        ));
   }
 }

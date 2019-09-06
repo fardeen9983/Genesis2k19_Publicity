@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/event.dart';
 import 'package:genesis19_publicity/services/db.dart';
-import 'package:genesis19_publicity/widgets/register_form.dart';
+import 'package:genesis19_publicity/widgets/register/register_form.dart';
+import 'package:progress_hud/progress_hud.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,9 +23,25 @@ class _RegisterPageState extends State<RegisterPage> {
   final db = DatabaseService();
   Widget placeholder = Container(),
       error = Container(),
-      errWidget = Center(child: Text("No such event exists"));
+      errWidget = Center(child: Text("No such event exists")),
+      stackHolder = Container();
   final RegisterForm _registerForm = RegisterForm();
   final _key = GlobalKey<ScaffoldState>();
+
+  ProgressHUD _progressHUD;
+
+  @override
+  void initState() {
+    _progressHUD = new ProgressHUD(
+      backgroundColor: Colors.black12,
+      color: Colors.white,
+      containerColor: Colors.blue,
+      borderRadius: 5.0,
+      text: 'Loading...',
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,43 +71,46 @@ class _RegisterPageState extends State<RegisterPage> {
           backgroundColor: Colors.transparent,
           elevation: 0.0,
         ),
-        body: StreamBuilder(
-          stream: Firestore.instance.collection('event_cat').snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap) {
-            if (snap.hasData) {
-              setData(snap.data.documents);
-              return SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          branchDD(data),
-                          eventDD(data),
-                          RaisedButton(
-                            onPressed: selectEvent,
-                            child: Text(
-                              "Done",
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        ],
-                      ),
-                      placeholder,
-                      error
-                    ],
+        body: Stack(children: <Widget>[
+          StreamBuilder(
+            stream: Firestore.instance.collection('event_cat').snapshots(),
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap) {
+              if (snap.hasData) {
+                setData(snap.data.documents);
+                return SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            branchDD(data),
+                            eventDD(data),
+                            RaisedButton(
+                              onPressed: selectEvent,
+                              child: Text(
+                                "Done",
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          ],
+                        ),
+                        placeholder,
+                        error
+                      ],
+                    ),
                   ),
-                ),
-              );
-            } else
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-          },
-        ));
+                );
+              } else
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+            },
+          ),
+          stackHolder
+        ]));
   }
 
   Widget branchDD(data) {
@@ -193,8 +213,24 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void save(val) async {
-    await db.addReceipt(val['code'], val['list'], val['receipt'], Provider
-        .of<FirebaseUser>(_key.currentContext)
-        .email);
+    setState(() {
+      stackHolder = _progressHUD;
+    });
+    var error = await db.addReceipt(val['code'], val['list'], val['receipt'],
+        Provider
+            .of<FirebaseUser>(_key.currentContext)
+            .email);
+    _progressHUD.state.dismiss();
+    if (!error) {
+      Navigator.pop(_key.currentContext);
+    } else {
+      showDialog(
+          context: _key.currentContext,
+          builder: (context) =>
+              AlertDialog(
+                title: Text("ERROR.."),
+                content: Text("Try again later"),
+              ));
+    }
   }
 }

@@ -11,6 +11,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="genesis19_publicity">
         <activity
+            android:label="Genesis19 Publicity"
             android:name="bvm.genesis19.genesis19_publicity.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:genesis19_publicity/model/event.dart';
 import 'package:genesis19_publicity/model/participant.dart';
-import 'package:genesis19_publicity/widgets/participant_form.dart';
+import 'package:genesis19_publicity/widgets/register/participant_form.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -125,21 +125,19 @@ class RegisterForm extends StatelessWidget {
           error = true;
           return;
         }
-        val.events = [
-          {
+        val.events = {
+          receiptNo: {
             'date': DateFormat.yMd().format(DateTime.now()),
             'code': globalEvent.code,
             'receipt': receiptNo
           }
-        ];
+        };
         temp.add(val);
       });
 
-      return !error ? {
-        'list': temp,
-        'code': globalEvent.code,
-        'receipt': receiptNo
-      } : null;
+      return !error
+          ? {'list': temp, 'code': globalEvent.code, 'receipt': receiptNo}
+          : null;
     }
   }
 }

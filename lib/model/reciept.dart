@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 class Receipt {
   final String id;
   final String event;
-  final List<String> participants;
+  final List<dynamic> participants;
   final String date;
   final String referrer;
 
