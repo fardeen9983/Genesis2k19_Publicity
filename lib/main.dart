@@ -17,12 +17,27 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/': (context) => SignInPage(),
-          '/home': (context) => HomePage(),
-          '/register': (context) => RegisterPage()
+        // ignore: missing_return
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case '/':
+              return MaterialPageRoute(builder: (context) => SignInPage());
+              break;
+            case "/home":
+              return MaterialPageRoute(builder: (context) => HomePage());
+              break;
+            case "/register":
+              return MaterialPageRoute(builder: (context) => RegisterPage());
+              break;
+            case "/signin":
+              return MaterialPageRoute(builder: (context) => SignInPage());
+              break;
+            default:
+              return MaterialPageRoute(builder: (context) => SignInPage());
+          }
         },
+        debugShowCheckedModeBanner: false,
+
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,

@@ -9,7 +9,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="genesis19_publicity">
+        android:label="Genesis19 Pub">
         <activity
             android:label="Genesis19 Publicity"
             android:name="bvm.genesis19.genesis19_publicity.MainActivity"

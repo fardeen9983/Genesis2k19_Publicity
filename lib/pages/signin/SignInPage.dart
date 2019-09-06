@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,19 @@ class _SignInPageState extends State<SignInPage> {
   String _email;
 
   String _password;
+  FirebaseUser user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      user = Provider.of<FirebaseUser>(context);
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, "/home");
+      }
+    });
+  }
 
   /// GoogleSignIn googleauth = new GoogleSignIn();
   final formkey = new GlobalKey<FormState>();
@@ -70,16 +84,12 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<FirebaseUser>(context);
+    user = Provider.of<FirebaseUser>(context);
     ScreenUtil.instance = ScreenUtil.getInstance()
       ..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    Future.delayed(Duration.zero, () async {
-      if (user != null) {
-        Navigator.pushReplacementNamed(context, "/home");
-      }
-    });
+    Future.delayed(Duration.zero, () async {});
 
     return Scaffold(
       backgroundColor: Colors.white,
