@@ -88,14 +88,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           children: <Widget>[
                             branchDD(data),
                             eventDD(data),
-                            RaisedButton(
-                              onPressed: selectEvent,
-                              child: Text(
-                                "Done",
-                                textAlign: TextAlign.center,
-                              ),
-                            )
                           ],
+                        ),
+                        Center(
+                          child: RaisedButton(
+                            onPressed: selectEvent,
+                            child: Text(
+                              "Done",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                         placeholder,
                         error
