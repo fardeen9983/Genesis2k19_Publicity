@@ -55,16 +55,12 @@ class ReceiptDisplay extends StatelessWidget {
                         height: 10.0,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
                             "Price: ${event.price}",
                             style: TextStyle(fontSize: 20.0),
                           ),
-                          Text(
-                            "Credits: ${event.credit}",
-                            style: TextStyle(fontSize: 20.0),
-                          )
                         ],
                       ),
                       Row(

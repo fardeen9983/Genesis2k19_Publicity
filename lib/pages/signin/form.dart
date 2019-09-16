@@ -65,7 +65,6 @@ class FormCard extends StatelessWidget {
                 decoration: InputDecoration(
                     hintText: "Password",
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                obscureText: true,
                 validator: (value) => value.isEmpty ? validation : null,
                 onSaved: savepwd),
           ],

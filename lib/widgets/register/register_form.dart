@@ -107,7 +107,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       style: TextStyle(fontSize: 20.0),
                     ),
                     Text(
-                      "Credits: ${event.credit}",
+                      "Participants: ${event.numParticipants}",
                       style: TextStyle(fontSize: 20.0),
                     )
                   ],

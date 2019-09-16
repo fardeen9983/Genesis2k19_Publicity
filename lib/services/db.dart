@@ -41,7 +41,7 @@ class DatabaseService {
         leader: particpants[0].email,
         event: code,
         participants: particpants.map((doc) => doc.email).toList(),
-        date: DateFormat.yMd().format(DateTime.now()),
+        date: DateFormat('d/M/yy').format(DateTime.now()),
         id: rid,
         referrer: email);
     await _db
