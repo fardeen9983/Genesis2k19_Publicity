@@ -89,97 +89,69 @@ class _SignInPageState extends State<SignInPage> {
       ..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    Future.delayed(Duration.zero, () async {});
+
 
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Container(
-                    height: 280, child: Image.asset("assets/dvm.jpg")),
-              ),
-              Expanded(
-                child: Container(),
-              ),
-              Container(
-                height: 180,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/dvmcity.gif"),
-                        fit: BoxFit.fitWidth)),
-              )
-            ],
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 35.0),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: ScreenUtil.getInstance().setHeight(275),
-                  ),
-                  Form(
-                      key: formkey,
-                      child: FormCard(
-                        validation: 'required',
-                        saveemail: (value) => _email = value,
-                        savepwd: (value) => _password = value,
-                      )),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () => loginUser(context),
-                        child: Container(
-                          width: ScreenUtil.getInstance().setWidth(330),
-                          height: ScreenUtil.getInstance().setHeight(100),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [
-                                Color(0xFF17ead9),
-                                Color(0xFF6078ea)
-                              ]),
-                              borderRadius: BorderRadius.circular(6.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Color(0xFF6078ea).withOpacity(.3),
-                                    offset: Offset(0.0, 8.0),
-                                    blurRadius: 8.0)
-                              ]),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () => loginUser(context),
-                              child: Center(
-                                child: Text("SIGNIN",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins-Bold",
-                                        fontSize: 18,
-                                        letterSpacing: 1.0)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: ScreenUtil.getInstance().setHeight(30),
-                  ),
-                ],
-              ),
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(
+              height: ScreenUtil.getInstance().setHeight(275),
             ),
-          )
-        ],
+            Form(
+                key: formkey,
+                child: FormCard(
+                  validation: 'required',
+                  saveemail: (value) => _email = value,
+                  savepwd: (value) => _password = value,
+                )),
+            SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                InkWell(
+                  onTap: () => loginUser(context),
+                  child: Container(
+                    width: ScreenUtil.getInstance().setWidth(330),
+                    height: ScreenUtil.getInstance().setHeight(100),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          Color(0xFF17ead9),
+                          Color(0xFF6078ea)
+                        ]),
+                        borderRadius: BorderRadius.circular(6.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xFF6078ea).withOpacity(.3),
+                              offset: Offset(0.0, 8.0),
+                              blurRadius: 8.0)
+                        ]),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => loginUser(context),
+                        child: Center(
+                          child: Text("SIGNIN",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Poppins-Bold",
+                                  fontSize: 18,
+                                  letterSpacing: 1.0)),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: ScreenUtil.getInstance().setHeight(30),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -82,8 +82,10 @@ class _HomePageState extends State<HomePage> {
         },
       );
     } catch (e) {
-      Future.delayed(Duration(seconds: 1),
-              () => Navigator.pushReplacementNamed(context, "/"));
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, "/");
+      });
       return Container();
     }
   }

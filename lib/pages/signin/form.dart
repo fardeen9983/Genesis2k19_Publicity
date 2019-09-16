@@ -49,6 +49,7 @@ class FormCard extends StatelessWidget {
                     hintText: "Email",
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                 obscureText: false,
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) => value.isEmpty ? validation : null,
                 onSaved: saveemail),
             SizedBox(
@@ -67,21 +68,6 @@ class FormCard extends StatelessWidget {
                 obscureText: true,
                 validator: (value) => value.isEmpty ? validation : null,
                 onSaved: savepwd),
-            SizedBox(
-              height: ScreenUtil.getInstance().setHeight(35),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  "Forgot Password?",
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontFamily: "Poppins-Medium",
-                      fontSize: ScreenUtil.getInstance().setSp(28)),
-                )
-              ],
-            )
           ],
         ),
       ),

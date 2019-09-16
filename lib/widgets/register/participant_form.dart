@@ -6,9 +6,11 @@ import 'package:validators/validators.dart';
 // ignore: must_be_immutable
 class ParticipantForm extends StatefulWidget {
   final int index;
+  final bool leader;
   final _formKey = GlobalKey<FormState>();
 
-  ParticipantForm({Key key, @required this.index}) : super(key: key);
+  ParticipantForm({Key key, @required this.index, @required this.leader})
+      : super(key: key);
   String DD1 = 'CE', DD2 = '1';
 
   validate() {
@@ -50,7 +52,7 @@ class _ParticipantFormState extends State<ParticipantForm> {
             child: Column(
               children: <Widget>[
                 Text(
-                  "Participant ${widget.index}",
+                  widget.leader ? "Leader" : "Participant ${widget.index}",
                   style: TextStyle(fontSize: 20.0),
                 ),
                 Padding(
@@ -77,18 +79,24 @@ class _ParticipantFormState extends State<ParticipantForm> {
                         ),
                         TextFormField(
                           keyboardType: TextInputType.phone,
-                          validator: (val) => val.isEmpty
+                          validator: (val) =>
+                          widget.leader
+                              ? val.isEmpty
                               ? "Required"
                               : val.length == 10 && isNumeric(val)
-                                  ? null
-                                  : "Enter a valid mobile no",
+                              ? null
+                              : "Enter a valid mobile no"
+                              : null,
                           decoration: InputDecoration(labelText: 'Mobile no'),
                           onSaved: (val) => widget.map['mobile'] = val,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        widget.leader
+                            ? Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
                           children: <Widget>[branchDD(), yearDD()],
                         )
+                            : Container()
                       ],
                     ))
               ],

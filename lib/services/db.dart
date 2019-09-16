@@ -38,6 +38,7 @@ class DatabaseService {
     var eval,
         error = false;
     Receipt receipt = Receipt(
+        leader: particpants[0].email,
         event: code,
         participants: particpants.map((doc) => doc.email).toList(),
         date: DateFormat.yMd().format(DateTime.now()),

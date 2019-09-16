@@ -6,15 +6,17 @@ class Participant {
   final String mobile;
   final String branch;
   final int year;
+  final bool leader;
   Map<String, dynamic> events;
   final String email;
 
   Participant({
+    @required this.leader,
     @required this.name,
     this.mobile,
-    @required this.branch,
+    this.branch,
     this.year,
-    @required this.events,
+    this.events,
     @required this.email,
   });
 
@@ -31,6 +33,7 @@ class Participant {
   factory Participant.fromMap(Map<String, dynamic> data) {
     data = data ?? {};
     return Participant(
+        leader: data['leader'] ?? false,
         name: data['name'],
         mobile: data['mobile'],
         branch: data['branch'],
@@ -42,6 +45,7 @@ class Participant {
   factory Participant.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data;
     return Participant(
+        leader: data['leader'] ?? false,
         name: data['name'],
         mobile: data['mobile'],
         branch: data['branch'],

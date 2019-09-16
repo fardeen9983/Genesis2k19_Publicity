@@ -23,7 +23,7 @@ class ParticipantDisplay extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Text(
-                "Participant ${index}",
+                participant.leader ? "Leader" : "Participant ${index}",
                 style: TextStyle(fontSize: 20.0),
               ),
               Padding(
@@ -72,7 +72,8 @@ class ParticipantDisplay extends StatelessWidget {
                         margin: EdgeInsets.symmetric(
                             horizontal: 18.0, vertical: 8.0),
                       ),
-                      Row(children: [
+                      participant.leader
+                          ? Row(children: [
                         Container(
                           child: Text("Phone",
                               textAlign: TextAlign.center,
@@ -82,7 +83,8 @@ class ParticipantDisplay extends StatelessWidget {
                         Expanded(
                             child: Text(participant.mobile,
                                 style: TextStyle(fontSize: 18.0)))
-                      ]),
+                      ])
+                          : Container(),
                     ],
                   ))
             ],

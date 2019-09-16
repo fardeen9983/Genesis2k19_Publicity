@@ -7,8 +7,10 @@ class Receipt {
   final List<dynamic> participants;
   final String date;
   final String referrer;
+  final String leader;
 
   Receipt({@required this.event,
+    @required this.leader,
     @required this.participants,
     @required this.date,
     @required this.id,
@@ -17,6 +19,7 @@ class Receipt {
   factory Receipt.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data;
     return Receipt(
+        leader: data['leader'] ?? "",
         date: data['date'],
         id: doc.documentID,
         event: data['event'],
@@ -26,6 +29,7 @@ class Receipt {
 
   factory Receipt.fromMap(Map<String, dynamic> data) {
     return Receipt(
+        leader: data['leader'] ?? "",
         referrer: data['referrer'],
         date: data['date'],
         id: data['id'],
@@ -35,6 +39,7 @@ class Receipt {
 
   Map<String, dynamic> toMap() {
     return {
+      'leader': this.leader ?? null,
       'date': this.date,
       'id': this.id,
       'event': this.event,
@@ -45,6 +50,6 @@ class Receipt {
 
   @override
   String toString() {
-    return "Receipt : $id : $date : $event : $participants : $referrer ";
+    return "Receipt : $id : $date : $event : $participants : $referrer : $leader";
   }
 }

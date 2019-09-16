@@ -14,8 +14,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String DD1 = 'civil',
-      DD2 = 'Doom',
+  String DD1 = 'Civil',
+      DD2 = 'Isle Da Civilia',
       code;
   Map<String, dynamic> data = {};
   bool loadB = true,
@@ -152,16 +152,21 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void selectEvent() {
-    setState(() {
-      formLoaded = true;
-      if (data != null) {
-        String code;
-        data[DD1].forEach((val) {
-          if (val['name'] == DD2) {
-            code = val['code'];
-          }
-        });
-        this.code = code;
+    formLoaded = true;
+    if (data != null) {
+      for (var val in (data[DD1] as List)) {
+        if (val['name']
+            .toString()
+            .trim()
+            .toLowerCase()
+            .compareTo(DD2.toString().trim().toLowerCase()) ==
+            0) {
+          this.code = val['code'];
+          break;
+        }
+      }
+
+      setState(() {
         placeholder = StreamProvider<Event>.value(
           // ignore: missing_return
             catchError: (context, error) {
@@ -169,8 +174,8 @@ class _RegisterPageState extends State<RegisterPage> {
             },
             value: db.getEvent(code) ?? Event(title: 'None'),
             child: Form(child: _registerForm));
-      }
-    });
+      });
+    }
   }
 
   void setData(List<DocumentSnapshot> docs) {
@@ -179,7 +184,6 @@ class _RegisterPageState extends State<RegisterPage> {
       (doc.data['events'] as List<dynamic>)
           .forEach((val) => data[doc.documentID].add(val));
     });
-
     if (loadB) {
       DD2 = data[DD1][0]['name'];
       loadB = false;
